@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Findigs Spring Onsite 2026 — Schedule</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sand: #F5F3EC;
+      --forest: #212B14;
+      --n90: #3D3D3A;
+      --n60: #6B6B67;
+      --surface: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--sand);
+      color: var(--forest);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 0 4rem;
+    }
+
+    /* ── Header ── */
+    .header {
+      padding: 1.75rem 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(33,43,20,0.12);
+    }
+    .logo svg { height: 28px; width: auto; }
+    .header-right { text-align: right; }
+    .header-right h1 { font-size: 14px; font-weight: 600; color: var(--forest); }
+    .header-right p  { font-size: 12px; color: var(--n60); margin-top: 3px; }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(33,43,20,0.08);
+    }
+    .litem {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--n90);
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 4px 10px;
+      border: 1px solid rgba(33,43,20,0.12);
+    }
+    .ldot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Day tabs ── */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 1rem 1.5rem 0;
+    }
+    .tab {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 18px;
+      cursor: pointer;
+      background: transparent;
+      border: 1.5px solid rgba(33,43,20,0.25);
+      border-radius: 20px;
+      color: var(--forest);
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab.active  { background: var(--forest); color: #fff; border-color: var(--forest); }
+    .tab:hover:not(.active) { background: rgba(33,43,20,0.06); }
+
+    /* ── Day panels ── */
+    .day-panel { display: none; padding: 1.25rem 1.5rem; }
+    .day-panel.active { display: block; }
+
+    /* ── Events ── */
+    .events { display: flex; flex-direction: column; gap: 6px; }
+    .event  { display: flex; gap: 10px; align-items: flex-start; }
+
+    .time-col {
+      min-width: 92px;
+      padding-top: 10px;
+      font-size: 11px;
+      color: var(--n60);
+      flex-shrink: 0;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .ec {
+      flex: 1;
+      border-radius: 10px;
+      padding: 9px 13px;
+      border-left: 3px solid transparent;
+    }
+
+    /* Color coding using brand secondary palette */
+    .ec.work     { background: rgba(173,210,255,0.35); border-left-color: #ADD2FF; }
+    .ec.workshop { background: rgba(34,195,134,0.18);  border-left-color: #22C386; }
+    .ec.speaker  { background: rgba(255,206,89,0.30);  border-left-color: #FFCE59; }
+    .ec.plenary  { background: rgba(243,179,241,0.30); border-left-color: #F3B3F1; }
+    .ec.social,
+    .ec.meal     { background: rgba(255,162,122,0.30); border-left-color: #FFA27A; }
+    .ec.break    { background: rgba(221,200,201,0.35); border-left-color: #DDC8C9; }
+
+    .en { font-size: 13px; font-weight: 600; line-height: 1.35; }
+    .en.work     { color: #1a3d5c; }
+    .en.workshop { color: #0e4d35; }
+    .en.speaker  { color: #5c4200; }
+    .en.plenary  { color: #5c1a5a; }
+    .en.social,
+    .en.meal     { color: #5c2200; }
+    .en.break    { color: #4a3435; }
+
+    .emeta  { font-size: 11.5px; margin-top: 3px; color: var(--n60); line-height: 1.5; }
+    .elead  { font-style: italic; }
+
+    /* ── Loading / error states ── */
+    .state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      text-align: center;
+      gap: 12px;
+      color: var(--n60);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(33,43,20,0.15);
+      border-top-color: var(--forest);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .refresh-btn {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--n60);
+      background: none;
+      border: 1px solid rgba(33,43,20,0.18);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .refresh-btn:hover { background: rgba(33,43,20,0.06); }
+    .refresh-btn svg { width: 12px; height: 12px; }
+
+    .last-updated {
+      font-size: 11px;
+      color: var(--n60);
+      padding: 0.5rem 1.5rem;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(33,43,20,0.06);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .time-col { min-width: 74px; }
+      .tabs { gap: 4px; }
+      .tab { padding: 7px 12px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 730 219" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#ca)">
+          <g clip-path="url(#cb)">
+            <path d="M118.929 106.27L130.227 109.491C131.442 104.873 133.507 99.5868 136.483 93.5715C139.399 87.5562 142.193 82.8168 144.805 79.2319L144.319 77.4091C140.006 76.8015 134.661 75.5255 128.283 73.5812C121.906 71.6369 116.378 69.5102 111.762 67.2013L106.235 77.3484C111.762 80.1433 118.99 82.6953 127.98 84.9434C123.667 92.9639 120.63 100.012 118.99 106.21M37.659 218.495C46.2841 218.495 53.2692 215.154 58.5536 208.47C63.8988 201.786 67.118 191.943 68.3936 179.001C69.1832 171.163 69.4869 161.745 69.4261 150.808C69.3654 139.871 68.758 123.952 67.7254 102.989L67.0573 85.4295C66.5714 74.1888 66.4499 65.3785 66.5714 59.0594C66.7536 44.9022 68.3936 33.7829 71.6735 25.7625C74.8928 17.7421 79.2053 13.7319 84.6112 13.7319C87.8304 13.7319 90.1993 15.0687 91.7785 17.6814C93.2971 20.2941 94.0867 24.2435 94.0867 29.4689C94.0867 37.0033 92.4467 45.0237 89.2275 53.4694C86.0082 61.9759 81.7564 69.8748 76.5328 77.2876C71.3091 84.7004 65.5388 90.8372 59.2218 95.7589C53.5122 99.8906 48.41 102.929 43.8545 104.751C39.299 106.574 34.5612 107.546 29.6413 107.546C24.7213 107.546 21.0162 105.906 18.1006 102.686C15.1851 99.4653 13.5451 94.9082 13.2414 89.0752L0.060791 95.7589C0.850414 103.475 3.88743 109.673 9.29331 114.352C14.6992 119.03 21.3806 121.4 29.3983 121.4C34.5005 121.4 39.7849 120.428 45.1908 118.423C50.6574 116.417 56.3062 113.44 62.1981 109.43C70.8232 103.415 78.6587 95.9411 85.7653 86.8878C92.8719 77.8344 98.5207 68.3558 102.712 58.2695C106.964 48.1832 109.09 38.583 109.09 29.5297C109.09 20.4764 106.903 12.8813 102.59 7.71661C98.2777 2.55195 92.3252 0 84.7934 0C74.3461 0 66.2069 5.22542 60.4366 15.6763C54.6663 26.1879 51.6292 40.6489 51.3256 59.1202C51.1433 66.9583 51.5078 77.7737 52.2367 91.4448C52.3581 95.9411 52.6011 101.167 52.9048 107.182C53.8159 126.443 54.3018 141.208 54.4233 151.537C54.484 161.866 54.0589 171.041 53.1478 179.001C52.3581 187.021 50.6574 193.28 48.0456 197.837C45.4337 202.394 42.093 204.642 38.0842 204.642C35.2901 204.642 33.225 203.548 31.7065 201.422C30.2487 199.295 29.5198 195.953 29.5198 191.518C29.5198 179.062 34.5005 166.241 44.4012 153.056C54.3018 139.871 67.2395 127.901 83.0927 117.025C98.9459 106.149 115.528 97.3994 132.778 90.7765L129.984 78.0775C111.033 84.8827 92.6289 94.4829 74.6498 106.939C56.7314 119.395 42.2145 133.127 31.0991 148.074C19.9836 163.021 14.4562 177.482 14.4562 191.518C14.4562 199.963 16.5214 206.586 20.7125 211.386C24.8428 216.187 30.4916 218.556 37.5983 218.556" fill="#8EDE65"/>
+          </g>
+          <path d="M667.62 150.437L646.945 161.606C649.512 168.191 654.532 173.328 662.033 176.989C669.535 180.651 678.709 182.482 689.557 182.482C702.49 182.482 712.459 179.885 719.464 174.705C726.483 169.525 729.986 162.159 729.986 152.651C729.986 144.476 727.121 138.161 721.393 133.705C715.664 129.248 706.758 126.467 694.691 125.374C685.913 124.523 679.9 123.416 676.667 122.082C673.434 120.748 671.818 118.661 671.818 115.851C671.818 113.042 673.065 110.97 675.561 109.621C678.057 108.287 681.999 107.606 687.359 107.606C692.11 107.606 696.165 108.67 699.526 110.813C702.873 112.942 705.17 115.908 706.39 119.697L728.71 112.375C726.271 104.924 721.307 99.0769 713.806 94.8052C706.304 90.5335 697.371 88.4047 687.005 88.4047C674.682 88.4047 664.968 91.0586 657.821 96.3663C650.689 101.674 647.115 108.841 647.115 117.881C647.115 126.183 650.192 132.584 656.347 137.097C662.501 141.609 671.86 144.363 684.424 145.342C690.039 145.839 694.308 146.406 697.229 147.087C700.15 147.754 702.235 148.677 703.454 149.841C704.674 151.004 705.284 152.622 705.284 154.694C705.284 160.428 700.164 163.294 689.912 163.294C684.055 163.294 679.234 162.202 675.462 160.002C671.676 157.802 669.052 154.637 667.592 150.479M467.831 135.464C467.831 144.008 465.846 150.692 461.89 155.517C457.933 160.343 452.403 162.755 445.341 162.755C438.634 162.755 433.33 160.314 429.431 155.432C425.531 150.55 423.574 143.894 423.574 135.479C423.574 127.063 425.531 120.407 429.431 115.525C433.33 110.643 438.634 108.202 445.341 108.202C452.417 108.202 457.933 110.615 461.89 115.44C465.846 120.265 467.831 126.949 467.831 135.479M612.16 135.479C612.16 144.022 610.175 150.706 606.219 155.532C602.248 160.357 596.732 162.769 589.67 162.769C582.963 162.769 577.659 160.328 573.76 155.446C569.86 150.564 567.903 143.909 567.903 135.493C567.903 127.077 569.86 120.421 573.76 115.539C577.659 110.657 582.963 108.216 589.67 108.216C596.746 108.216 602.262 110.629 606.219 115.454C610.175 120.279 612.16 126.964 612.16 135.493M519.775 80.7554C523.802 80.7554 527.092 79.4072 529.658 76.7249C532.225 74.0427 533.501 70.6225 533.501 66.4785C533.501 62.3345 532.282 58.8575 529.843 56.4024C527.404 53.9614 524.043 52.7409 519.775 52.7409C515.506 52.7409 512.032 54.0182 509.352 56.5869C506.672 59.1556 505.325 62.448 505.325 66.4785C505.325 70.5089 506.728 73.8866 509.536 76.6398C512.344 79.393 515.761 80.7554 519.775 80.7554ZM284.166 80.7554C288.193 80.7554 291.483 79.4072 294.05 76.7249C296.616 74.0427 297.893 70.6225 297.893 66.4785C297.893 62.3345 296.673 58.8575 294.234 56.4024C291.795 53.9614 288.434 52.7409 284.166 52.7409C279.898 52.7409 276.423 54.0182 273.743 56.5869C271.063 59.1556 269.716 62.448 269.716 66.4785C269.716 70.5089 271.12 73.8866 273.928 76.6398C276.735 79.393 280.153 80.7554 284.166 80.7554ZM507.154 180.708H531.856V90.1929H507.154V180.637V180.708ZM310.868 180.708H335.57V133.109C335.57 125.544 337.399 119.499 341.058 114.986C344.716 110.473 349.595 108.216 355.692 108.216C368.015 108.216 374.169 116.093 374.169 131.831V180.708H398.858V144.278H399.411C400.871 156.113 405.296 165.452 412.669 172.292C420.043 179.132 429.346 182.538 440.562 182.538C446.164 182.538 451.169 181.403 455.565 179.147C459.961 176.89 463.974 173.385 467.633 168.616H468.186L470.568 180.693H492.52V57.2397H467.831V101.915H467.278C464.102 97.2745 460.358 93.8543 456.033 91.6688C451.708 89.4691 446.546 88.3763 440.577 88.3763C429.232 88.3763 419.901 91.7965 412.584 98.6227C405.267 105.463 400.871 114.858 399.411 126.822H398.858C398.361 114.248 395.114 104.697 389.073 98.1686C383.032 91.6404 374.41 88.3763 363.194 88.3763C357.096 88.3763 351.608 89.54 346.73 91.8533C341.852 94.1665 337.882 97.53 334.833 101.929H334.28L332.266 90.2071H310.868V180.651V180.708ZM213.178 180.708H237.867V110.771H271.531V180.708H296.233V90.1929H237.923V86.3469C237.923 83.0544 238.661 80.6418 240.121 79.1091C241.582 77.5906 244.021 76.8243 247.438 76.8243C251.579 76.8243 255.238 77.3777 258.414 78.4705L260.243 57.4242C255.124 56.076 249.324 55.4089 242.858 55.4089C234.194 55.4089 227.089 57.9067 221.545 62.9164C216 67.926 213.221 74.3833 213.221 82.3165V90.1929H198.587V110.7H213.221V180.637L213.178 180.708ZM611.962 168.446H612.515V177.784C612.515 184.256 610.374 189.379 606.105 193.168C601.837 196.943 595.98 198.845 588.55 198.845C576.355 198.845 568.187 194.757 564.032 186.583L545.002 199.952C548.901 206.295 554.389 210.993 561.465 214.044C568.541 217.095 577.447 218.614 588.167 218.614C603.411 218.614 615.337 215.08 623.93 207.998C632.523 200.917 636.82 191.096 636.82 178.522V90.1929H614.869L613.039 101.915H612.486C606.389 92.8893 597.186 88.3621 584.863 88.3621C576.454 88.3621 569.009 90.3206 562.543 94.2233C556.077 98.126 551.085 103.618 547.54 110.7C544.009 117.782 542.236 126.013 542.236 135.422C542.236 144.831 544.009 153.062 547.54 160.144C551.071 167.226 556.077 172.718 562.543 176.62C569.009 180.523 576.44 182.482 584.863 182.482C590.592 182.482 595.739 181.29 600.32 178.905C604.9 176.521 608.771 173.016 611.933 168.375" fill="#212B14"/>
+        </g>
+        <defs>
+          <clipPath id="ca"><rect width="730" height="219" fill="white"/></clipPath>
+          <clipPath id="cb"><rect width="144.805" height="218.556" fill="white"/></clipPath>
+        </defs>
+      </svg>
+    </div>
+    <div class="header-right">
+      <h1>Spring Onsite 2026</h1>
+      <p>April 21–23 · Full schedule</p>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="litem"><div class="ldot" style="background:#ADD2FF"></div>FindigsX work</div>
+    <div class="litem"><div class="ldot" style="background:#22C386"></div>Workshop</div>
+    <div class="litem"><div class="ldot" style="background:#FFCE59"></div>Speaker</div>
+    <div class="litem"><div class="ldot" style="background:#F3B3F1"></div>Plenary</div>
+    <div class="litem"><div class="ldot" style="background:#FFA27A"></div>Social / meals</div>
+    <div class="litem"><div class="ldot" style="background:#DDC8C9"></div>Break</div>
+  </div>
+
+  <!-- Last updated + refresh -->
+  <div class="last-updated">
+    <span id="last-updated-text" style="font-size:11px;color:var(--n60)">Loading from Google Sheets…</span>
+    <button class="refresh-btn" onclick="loadSchedule()" title="Reload from sheet">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5c1.8 0 3.4.87 4.4 2.2" stroke-linecap="round"/>
+        <path d="M10.5 4.5H13V2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tab-tue" onclick="showDay('tue', this)">Tue 4/21</button>
+    <button class="tab" id="tab-wed" onclick="showDay('wed', this)">Wed 4/22</button>
+    <button class="tab" id="tab-thu" onclick="showDay('thu', this)">Thu 4/23</button>
+  </div>
+
+  <!-- Content area -->
+  <div id="content">
+    <div class="state"><div class="spinner"></div><span>Fetching schedule…</span></div>
+  </div>
+
+</div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────────
+  const SHEET_ID  = '1GTWd_1R94wB-XmQfarj17xO-Pigd6QpFa-ovyYa_pp8';
+  const GID       = '1292498457';
+  const CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+
+  // ── State ───────────────────────────────────────────────────────────────────
+  let activeDay   = 'tue';
+  let parsedDays  = { tue: [], wed: [], thu: [] };
+
+  // ── Classify an event into a CSS type ───────────────────────────────────────
+  function classify(name, notes) {
+    const n = (name + ' ' + notes).toLowerCase();
+    if (/breakfast|lunch|dinner|meal/i.test(n))          return 'meal';
+    if (/break(?!out)|reset|flex|catch.up|transition|swag/i.test(n)) return 'break';
+    if (/icebreaker|energizer/i.test(n))                  return 'break';
+    if (/workshop|skills.build|showcase/i.test(n))        return 'workshop';
+    if (/findigsx|work block|strategize|breakout|share.out|presentation prep/i.test(n)) return 'work';
+    if (/speaker|confirmed|fireside|josh lin|hugh frater|liz tran|eli wachs/i.test(n)) return 'speaker';
+    if (/kickoff|wrap|intro|plenary|synthesis|closing|leadership|value reset|intra.team/i.test(n)) return 'plenary';
+    return 'break';
+  }
+
+  // ── Parse CSV rows into day buckets ─────────────────────────────────────────
+  function parseCSV(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const days  = { tue: [], wed: [], thu: [] };
+    let current = null;
+
+    for (const line of lines) {
+      // Simple CSV split respecting quoted fields
+      const cols = splitCSV(line);
+      const [, timeRaw, eventRaw, who, notes] = cols.map(c => c.trim());
+
+      if (/tuesday/i.test(timeRaw))   { current = 'tue'; continue; }
+      if (/wednesday/i.test(timeRaw)) { current = 'wed'; continue; }
+      if (/thursday/i.test(timeRaw))  { current = 'thu'; continue; }
+
+      if (!current || !timeRaw || !eventRaw) continue;
+      if (/time|event type|color key|findigs|workshops|plenary|speakers|social|break/i.test(timeRaw) && !timeRaw.includes('–') && !timeRaw.includes('-')) continue;
+
+      const time  = timeRaw.replace(/\s/g, '');
+      const event = eventRaw.replace(/\n/g, ' ').trim();
+      const lead  = (who || '').replace(/\n/g, ' / ').trim();
+      const note  = (notes || '').replace(/\n/g, ' ').trim();
+
+      if (!time.match(/\d/)) continue; // skip non-time rows
+
+      days[current].push({ time, event, lead, note, type: classify(event, note) });
+    }
+    return days;
+  }
+
+  function splitCSV(line) {
+    const result = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { result.push(cur); cur = ''; }
+      else { cur += ch; }
+    }
+    result.push(cur);
+    return result;
+  }
+
+  // ── Render a list of events ──────────────────────────────────────────────────
+  function renderEvents(events) {
+    if (!events.length) return '<p style="padding:2rem 0;color:var(--n60);font-size:13px;">No events found for this day.</p>';
+    return '<div class="events">' + events.map(ev => `
+      <div class="event">
+        <div class="time-col">${ev.time}</div>
+        <div class="ec ${ev.type}">
+          <div class="en ${ev.type}">${ev.event}</div>
+          ${ev.lead || ev.note ? `<div class="emeta">${ev.lead ? `<span class="elead">${ev.lead}</span>` : ''}${ev.lead && ev.note ? ' · ' : ''}${ev.note || ''}</div>` : ''}
+        </div>
+      </div>`).join('') + '</div>';
+  }
+
+  // ── Build full content HTML ──────────────────────────────────────────────────
+  function renderContent() {
+    return `
+      <div id="tue"  class="day-panel ${activeDay==='tue'?'active':''}">${renderEvents(parsedDays.tue)}</div>
+      <div id="wed"  class="day-panel ${activeDay==='wed'?'active':''}">${renderEvents(parsedDays.wed)}</div>
+      <div id="thu"  class="day-panel ${activeDay==='thu'?'active':''}">${renderEvents(parsedDays.thu)}</div>`;
+  }
+
+  // ── Tab switching ────────────────────────────────────────────────────────────
+  function showDay(id, btn) {
+    activeDay = id;
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const panel = document.getElementById(id);
+    if (panel) panel.classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── Fetch & render ───────────────────────────────────────────────────────────
+  async function loadSchedule() {
+    document.getElementById('last-updated-text').textContent = 'Refreshing…';
+    document.getElementById('content').innerHTML =
+      '<div class="state"><div class="spinner"></div><span>Fetching schedule…</span></div>';
+
+    try {
+      const res  = await fetch(CSV_URL + '&cachebust=' + Date.now());
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      parsedDays = parseCSV(text);
+      document.getElementById('content').innerHTML = renderContent();
+
+      const now = new Date();
+      document.getElementById('last-updated-text').textContent =
+        'Last updated ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (err) {
+      document.getElementById('content').innerHTML = `
+        <div class="state">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+          </svg>
+          <span>Couldn't load the schedule.<br>Make sure the Google Sheet is set to <strong>Anyone with the link can view</strong>.</span>
+          <button class="refresh-btn" onclick="loadSchedule()" style="margin:0">Try again</button>
+        </div>`;
+      document.getElementById('last-updated-text').textContent = 'Failed to load';
+    }
+  }
+
+  loadSchedule();
+</script>
+</body>
+</html>
