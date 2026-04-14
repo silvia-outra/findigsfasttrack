@@ -113,7 +113,7 @@
     .ec.work     { background: rgba(173,210,255,0.35); border-left-color: #ADD2FF; }
     .ec.workshop { background: rgba(34,195,134,0.18);  border-left-color: #22C386; }
     .ec.speaker  { background: rgba(255,206,89,0.30);  border-left-color: #FFCE59; }
-    .ec.Intros & Warp Ups  { background: rgba(243,179,241,0.30); border-left-color: #F3B3F1; }
+    .ec.plenary  { background: rgba(243,179,241,0.30); border-left-color: #F3B3F1; }
     .ec.social,
     .ec.meal     { background: rgba(255,162,122,0.30); border-left-color: #FFA27A; }
     .ec.break    { background: rgba(221,200,201,0.35); border-left-color: #DDC8C9; }
@@ -122,7 +122,7 @@
     .en.work     { color: #1a3d5c; }
     .en.workshop { color: #0e4d35; }
     .en.speaker  { color: #5c4200; }
-    .en.Intros & Warp Ups  { color: #5c1a5a; }
+    .en.plenary  { color: #5c1a5a; }
     .en.social,
     .en.meal     { color: #5c2200; }
     .en.break    { color: #4a3435; }
@@ -267,7 +267,7 @@
     if (/workshop|skills.build|showcase/i.test(n))        return 'workshop';
     if (/Findigs Fast Track Work Block|work block|strategize|breakout|share.out|presentation prep/i.test(n)) return 'work';
     if (/speaker|confirmed|fireside|josh lin|hugh frater|liz tran|eli wachs/i.test(n)) return 'speaker';
-    if (/kickoff|wrap|intro|Intros & Warp Ups|synthesis|closing|leadership|value reset|intra.team/i.test(n)) return 'Intros & Warp Ups';
+    if (/kickoff|wrap|intro|Intros & Warp Ups|synthesis|closing|leadership|value reset|intra.team/i.test(n)) return 'plenary';
     return 'break';
   }
 
