@@ -113,7 +113,7 @@
     .ec.work     { background: rgba(173,210,255,0.35); border-left-color: #ADD2FF; }
     .ec.workshop { background: rgba(34,195,134,0.18);  border-left-color: #22C386; }
     .ec.speaker  { background: rgba(255,206,89,0.30);  border-left-color: #FFCE59; }
-    .ec.plenary  { background: rgba(243,179,241,0.30); border-left-color: #F3B3F1; }
+    .ec.Intros & Warp Ups  { background: rgba(243,179,241,0.30); border-left-color: #F3B3F1; }
     .ec.social,
     .ec.meal     { background: rgba(255,162,122,0.30); border-left-color: #FFA27A; }
     .ec.break    { background: rgba(221,200,201,0.35); border-left-color: #DDC8C9; }
@@ -122,7 +122,7 @@
     .en.work     { color: #1a3d5c; }
     .en.workshop { color: #0e4d35; }
     .en.speaker  { color: #5c4200; }
-    .en.plenary  { color: #5c1a5a; }
+    .en.Intros & Warp Ups  { color: #5c1a5a; }
     .en.social,
     .en.meal     { color: #5c2200; }
     .en.break    { color: #4a3435; }
@@ -262,12 +262,12 @@
   function classify(name, notes) {
     const n = (name + ' ' + notes).toLowerCase();
     if (/breakfast|lunch|dinner|meal/i.test(n))          return 'meal';
-    if (/break(?!out)|reset|flex|catch.up|transition|swag/i.test(n)) return 'break';
     if (/icebreaker|energizer/i.test(n))                  return 'break';
     if (/workshop|skills.build|showcase/i.test(n))        return 'workshop';
-    if (/findigs.?x|findigs fast track|work block|strategize|breakout|share.out|presentation prep/i.test(n)) return 'work';
+    if (/findigs.?x|findigs fast track|findigs x|work block|strategize|share.out|presentation prep/i.test(n)) return 'work';
     if (/fireside|josh lin|hugh frater|liz tran|eli wachs|beyond the deal|future of rental|\[confirmed\]/i.test(n)) return 'speaker';
-    if (/kickoff|wrap|intro|synthesis|closing|leadership|value reset|intra.team/i.test(n)) return 'plenary';
+    if (/kickoff|value reset|day \d|synthesis|closing remarks|intra.team|all.hands/i.test(n)) return 'plenary';
+    if (/break(?!out)|flex|catch.up|transition|swag/i.test(n)) return 'break';
     return 'break';
   }
 
